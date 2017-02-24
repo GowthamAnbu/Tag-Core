@@ -11,10 +11,10 @@ public class ConnectionUtil {
 	}
 	private static DataSource getDataSource() {
 		final BasicDataSource ds = new BasicDataSource();
-		ds.setDriverClassName("com.mysql.cj.jdbc.Driver");
+		ds.setDriverClassName("com.mysql.jdbc.Driver");
 		ds.setUsername("root");
 		ds.setPassword("admin");
-		ds.setUrl("jdbc:mysql://localhost:3306/Blog");
+		ds.setUrl("jdbc:mysql://localhost:3306/tag");
 		return ds;
 	}
 
