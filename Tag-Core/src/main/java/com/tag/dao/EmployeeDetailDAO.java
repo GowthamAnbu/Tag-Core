@@ -9,8 +9,8 @@ public class EmployeeDetailDAO {
 	private JdbcTemplate jdbcTemplate=ConnectionUtil.getJdbcTemplate();
 	
 	public void save(Employee employee){
-		String sql="INSERT INTO EMPLOYEE_DETAILS (ID,DEPARTMENT_ID,DESIGNATION_ID,RATING) VALUES(?,?,?,?);";
-		Object[] args={employee.getUser().getId(),employee.getDepartment().getId(),employee.getDesignation().getId(),employee.getRating()};
+		String sql="INSERT INTO EMPLOYEE_DETAILS (ID,DEPARTMENT_ID,DESIGNATION_ID) VALUES(?,?,?);";
+		Object[] args={employee.getUser().getId(),employee.getDepartment().getId(),employee.getDesignation().getId()};
 		jdbcTemplate.update(sql,args);
 	}
 	

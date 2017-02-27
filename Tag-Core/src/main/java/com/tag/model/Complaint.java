@@ -8,4 +8,8 @@ public class Complaint {
 	String name;
 	User user;
 	Department department;
+	String doorNo;
+	String streetName;
+	String pincode;
+	String details;
 }
