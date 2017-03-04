@@ -12,4 +12,5 @@ public class Complaint {
 	String streetName;
 	String pincode;
 	String details;
+	Status status;
 }
