@@ -28,7 +28,7 @@ public class ComplaintDAO {
 	}
 
 	public List<Complaint> findAll() {
-		String sql = "SELECT ID,NAME,USER_ID,DEPARTMENT_ID,DOOR_NUMBER,STREET_NAME,PINCODE,DETAILS FROM COMPLAINTS";
+		String sql = "SELECT ID,NAME,USER_ID,DEPARTMENT_ID,DOOR_NUMBER,STREET_NAME,PINCODE,DETAILS,STATUS_ID FROM COMPLAINTS";
 		return jdbcTemplate.query(sql, (rs, rowNum) -> {
 			final Complaint complaint = new Complaint();
 			final User user = new User();
@@ -43,6 +43,9 @@ public class ComplaintDAO {
 			complaint.setStreetName(rs.getString("STREET_NAME"));
 			complaint.setPincode(rs.getString("PINCODE"));
 			complaint.setDetails(rs.getString("DETAILS"));
+			final Status status = new Status();
+			status.setId(rs.getInt("STATUS_ID"));
+			complaint.setStatus(status);
 			return complaint;
 		});
 	}
