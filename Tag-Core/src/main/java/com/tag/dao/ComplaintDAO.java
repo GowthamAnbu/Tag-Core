@@ -135,4 +135,22 @@ public class ComplaintDAO {
 		});
 	}
 	
+	public List<Complaint> findbyEmployeeId(Integer employeeId) {
+		String sql = "SELECT C.ID,C.NAME,C.DOOR_NUMBER,C.STREET_NAME,C.PINCODE,C.DETAILS,C.STATUS_ID FROM COMPLAINTS C JOIN COMPLAINTS_EMPLOYEE CE ON C.ID=CE.COMPLAINT_ID WHERE CE.EMPLOYEE_ID=?";
+		Object[] args={employeeId};
+		return jdbcTemplate.query(sql, args, (rs, rowNum) -> {
+			final Complaint complaint = new Complaint();
+			complaint.setId(rs.getInt("ID"));
+			complaint.setName(rs.getString("NAME"));
+			complaint.setDoorNo(rs.getString("DOOR_NUMBER"));
+			complaint.setStreetName(rs.getString("STREET_NAME"));
+			complaint.setPincode(rs.getString("PINCODE"));
+			complaint.setDetails(rs.getString("DETAILS"));
+			final Status status = new Status();
+			status.setId(rs.getInt("STATUS_ID"));
+			complaint.setStatus(status);
+			return complaint;
+		});
+	}
+	
 }
