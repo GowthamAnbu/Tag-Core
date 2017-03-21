@@ -2,6 +2,7 @@ package com.tag.dao;
 
 import java.util.List;
 
+import org.apache.commons.mail.EmailException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import com.tag.model.Complaint;
@@ -9,6 +10,7 @@ import com.tag.model.Department;
 import com.tag.model.Status;
 import com.tag.model.User;
 import com.tag.util.ConnectionUtil;
+import com.tag.util.MailUtil;
 
 public class ComplaintDAO {
 	private JdbcTemplate jdbcTemplate = ConnectionUtil.getJdbcTemplate();
@@ -27,6 +29,12 @@ public class ComplaintDAO {
 		jdbcTemplate.update(sql, args);
 	}
 
+	public void update(Integer complaintId) {
+		String sql = "UPDATE COMPLAINTS SET STATUS_ID=3 WHERE ID=?";
+		Object[] args = { complaintId};
+		jdbcTemplate.update(sql, args);
+	}
+	
 	public List<Complaint> findAll() {
 		String sql = "SELECT ID,NAME,USER_ID,DEPARTMENT_ID,DOOR_NUMBER,STREET_NAME,PINCODE,DETAILS,STATUS_ID FROM COMPLAINTS";
 		return jdbcTemplate.query(sql, (rs, rowNum) -> {
@@ -154,6 +162,14 @@ public class ComplaintDAO {
 			complaint.setStatus(status);
 			return complaint;
 		});
+	}
+	
+	public void sendSimpleMail(User user){
+		try {
+			MailUtil.sendSimpleMail(user);
+		} catch (EmailException e) {
+			e.printStackTrace();
+		}
 	}
 	
 }

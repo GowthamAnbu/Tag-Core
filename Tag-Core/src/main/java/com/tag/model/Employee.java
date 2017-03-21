@@ -7,5 +7,5 @@ public class Employee {
 	User user;
 	Department department;
 	Designation designation;
-	Integer rating;
+	Float rating;
 }

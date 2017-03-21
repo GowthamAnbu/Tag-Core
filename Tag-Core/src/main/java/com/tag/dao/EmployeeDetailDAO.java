@@ -38,7 +38,7 @@ public class EmployeeDetailDAO {
 			final Role role = new Role();
 			role.setName(rs.getString("DESIGNATION"));
 			user.setRole(role);
-			employee.setRating(rs.getInt("RATING"));
+			employee.setRating(rs.getFloat("RATING"));
 			employee.setUser(user);
 			return employee;
 		});

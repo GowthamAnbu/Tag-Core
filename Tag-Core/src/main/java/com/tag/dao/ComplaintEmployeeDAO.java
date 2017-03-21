@@ -2,10 +2,13 @@ package com.tag.dao;
 
 import java.util.List;
 
+import org.apache.commons.mail.EmailException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import com.tag.model.ComplaintEmployee;
+import com.tag.model.User;
 import com.tag.util.ConnectionUtil;
+import com.tag.util.MailUtil;
 
 public class ComplaintEmployeeDAO {
 	private JdbcTemplate jdbcTemplate = ConnectionUtil.getJdbcTemplate();
@@ -22,5 +25,12 @@ public class ComplaintEmployeeDAO {
 		List<Integer> employeeList = jdbcTemplate.queryForList(sql, args,int.class);
 		return employeeList;
 	}
-
+	
+	public void sendSimpleMail(User complaintee,User user){
+		try {
+			MailUtil.sendSimpleMail(complaintee,user);
+		} catch (EmailException e) {
+			e.printStackTrace();
+		}
+	}
 }
