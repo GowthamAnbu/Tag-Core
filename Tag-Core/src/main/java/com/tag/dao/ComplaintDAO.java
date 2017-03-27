@@ -1,5 +1,6 @@
 package com.tag.dao;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 import org.apache.commons.mail.EmailException;
@@ -16,27 +17,30 @@ public class ComplaintDAO {
 	private JdbcTemplate jdbcTemplate = ConnectionUtil.getJdbcTemplate();
 
 	public void save(Complaint complaint) {
-		String sql = "INSERT INTO COMPLAINTS (NAME,USER_ID,DEPARTMENT_ID,DOOR_NUMBER,STREET_NAME,PINCODE,DETAILS) VALUES(?,?,?,?,?,?,?);";
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		String sql = "INSERT INTO COMPLAINTS (NAME,USER_ID,DEPARTMENT_ID,DOOR_NUMBER,STREET_NAME,PINCODE,DETAILS,STATUS_TIME) VALUES(?,?,?,?,?,?,?,?);";
 		Object[] args = { complaint.getName(), complaint.getUser().getId(), complaint.getDepartment().getId(),
-				complaint.getDoorNo(), complaint.getStreetName(), complaint.getPincode(), complaint.getDetails() };
+				complaint.getDoorNo(), complaint.getStreetName(), complaint.getPincode(), complaint.getDetails(),sdf.format(System.currentTimeMillis())  };
 		jdbcTemplate.update(sql, args);
 	}
 
 	public void uSave(Complaint complaint) {
-		String sql = "INSERT INTO COMPLAINTS (NAME,DEPARTMENT_ID,STREET_NAME,PINCODE,DETAILS) VALUES(?,?,?,?,?);";
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		String sql = "INSERT INTO COMPLAINTS (NAME,DEPARTMENT_ID,STREET_NAME,PINCODE,DETAILS,STATUS_TIME) VALUES(?,?,?,?,?,?);";
 		Object[] args = { complaint.getName(), complaint.getDepartment().getId(), complaint.getStreetName(),
-				complaint.getPincode(), complaint.getDetails() };
+				complaint.getPincode(), complaint.getDetails(),sdf.format(System.currentTimeMillis()) };
 		jdbcTemplate.update(sql, args);
 	}
 
 	public void update(Integer complaintId) {
-		String sql = "UPDATE COMPLAINTS SET STATUS_ID=3 WHERE ID=?";
-		Object[] args = { complaintId};
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		String sql = "UPDATE COMPLAINTS SET STATUS_ID=3,STATUS_TIME=? WHERE ID=?";
+		Object[] args = { sdf.format(System.currentTimeMillis()),complaintId};
 		jdbcTemplate.update(sql, args);
 	}
 	
 	public List<Complaint> findAll() {
-		String sql = "SELECT ID,NAME,USER_ID,DEPARTMENT_ID,DOOR_NUMBER,STREET_NAME,PINCODE,DETAILS,STATUS_ID FROM COMPLAINTS";
+		String sql = "SELECT ID,NAME,USER_ID,DEPARTMENT_ID,DOOR_NUMBER,STREET_NAME,PINCODE,DETAILS,REGISTERED_TIME,STATUS_ID,STATUS_TIME FROM COMPLAINTS";
 		return jdbcTemplate.query(sql, (rs, rowNum) -> {
 			final Complaint complaint = new Complaint();
 			final User user = new User();
@@ -51,8 +55,10 @@ public class ComplaintDAO {
 			complaint.setStreetName(rs.getString("STREET_NAME"));
 			complaint.setPincode(rs.getString("PINCODE"));
 			complaint.setDetails(rs.getString("DETAILS"));
+			complaint.setRegisteredTime(rs.getTimestamp("REGISTERED_TIME").toLocalDateTime());
 			final Status status = new Status();
 			status.setId(rs.getInt("STATUS_ID"));
+			complaint.setStatusTime(rs.getTimestamp("STATUS_TIME").toLocalDateTime());
 			complaint.setStatus(status);
 			return complaint;
 		});
@@ -78,10 +84,10 @@ public class ComplaintDAO {
 		});
 	}
 	
-	public int getUserId(Integer complaintId){
-		String sql = "SELECT USER_ID FROM COMPLAINTS WHERE ID=?";
+	public Integer getUserId(Integer complaintId){
+		String sql = "SELECT IFNULL((SELECT USER_ID FROM COMPLAINTS WHERE ID=?),NULL)";
 		Object[] args = { complaintId };
-		return jdbcTemplate.queryForObject(sql,args,int.class);
+		return jdbcTemplate.queryForObject(sql,args,Integer.class);
 	}
 	
 	public List<Complaint> findbyUserId(Integer userId) {
@@ -106,7 +112,8 @@ public class ComplaintDAO {
 	}
 	
 	public List<Complaint> getEmployee(Integer userId) {
-		String sql = "SELECT C.ID AS COMPLAINT_ID,C.NAME AS COMPLAINT_NAME,CE.`EMPLOYEE_ID` EMPLOYEE_ID,C.`STATUS_ID`AS STATUS_ID FROM COMPLAINTS C LEFT JOIN COMPLAINTS_EMPLOYEE CE ON C.`ID`=CE.`COMPLAINT_ID`WHERE C.`STATUS_ID` IN (3,4) AND C.`USER_ID`=?";
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		String sql = "SELECT C.ID AS COMPLAINT_ID,C.NAME AS COMPLAINT_NAME,CE.`EMPLOYEE_ID` EMPLOYEE_ID,C.`STATUS_ID`AS STATUS_ID,C.`REGISTERED_TIME` AS REGISTERED_TIME,C.`STATUS_TIME` AS STATUS_TIME  FROM COMPLAINTS C LEFT JOIN COMPLAINTS_EMPLOYEE CE ON C.`ID`=CE.`COMPLAINT_ID`WHERE C.`STATUS_ID` IN (3,4) AND C.`USER_ID`=?";
 		Object[] args = { userId };
 		return jdbcTemplate.query(sql, args, (rs, rowNum) -> {
 			final Complaint complaint = new Complaint();
@@ -117,13 +124,15 @@ public class ComplaintDAO {
 			final Status status = new Status();
 			status.setId(rs.getInt("STATUS_ID"));
 			complaint.setStatus(status);
+			complaint.setRegisteredTime(rs.getTimestamp("REGISTERED_TIME").toLocalDateTime());
+			complaint.setStatusTime(rs.getTimestamp("STATUS_TIME").toLocalDateTime());
 			complaint.setUser(user);
 			return complaint;
 		});
 	}
 	
 	public List<Complaint> viewComplaintStatus(Integer userId) {
-		String sql = "SELECT ID,NAME,USER_ID,DEPARTMENT_ID,DOOR_NUMBER,STREET_NAME,PINCODE,DETAILS,STATUS_ID FROM COMPLAINTS WHERE USER_ID=?";
+		String sql = "SELECT ID,NAME,USER_ID,DEPARTMENT_ID,DOOR_NUMBER,STREET_NAME,PINCODE,DETAILS,REGISTERED_TIME,STATUS_ID,STATUS_TIME FROM COMPLAINTS WHERE USER_ID=?";
 		Object[] args={userId};
 		return jdbcTemplate.query(sql, args, (rs, rowNum) -> {
 			final Complaint complaint = new Complaint();
@@ -139,8 +148,10 @@ public class ComplaintDAO {
 			complaint.setStreetName(rs.getString("STREET_NAME"));
 			complaint.setPincode(rs.getString("PINCODE"));
 			complaint.setDetails(rs.getString("DETAILS"));
+			complaint.setRegisteredTime(rs.getTimestamp("REGISTERED_TIME").toLocalDateTime());
 			final Status status = new Status();
 			status.setId(rs.getInt("STATUS_ID"));
+			complaint.setStatusTime(rs.getTimestamp("STATUS_TIME").toLocalDateTime());
 			complaint.setStatus(status);
 			return complaint;
 		});
@@ -170,6 +181,27 @@ public class ComplaintDAO {
 		} catch (EmailException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public void sendSimpleMail(User complaintee,Integer complaintId,Integer statusId){
+		try {
+			MailUtil.sendSimpleMail(complaintee,complaintId,statusId);
+		} catch (EmailException e) {
+			e.printStackTrace(); 
+		}
+	}
+	
+	public void changeStatus(Integer complaintId,Integer statusId) {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		String sql = "UPDATE COMPLAINTS SET STATUS_ID=?,STATUS_TIME=? WHERE ID=?";
+		Object[] args = { statusId,sdf.format(System.currentTimeMillis()),complaintId};
+		jdbcTemplate.update(sql, args);
+	}
+	
+	public Integer getStatus(Integer id){
+		String sql = "SELECT STATUS_ID FROM COMPLAINTS WHERE ID=?";
+		Object[] args = {id};
+		return jdbcTemplate.queryForObject(sql,args,Integer.class);
 	}
 	
 }

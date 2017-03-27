@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 
+import com.tag.dto.Report;
 import com.tag.model.Employee;
 import com.tag.model.Role;
 import com.tag.model.User;
@@ -44,4 +45,17 @@ public class EmployeeDetailDAO {
 		});
 	}
 
+	public List<Report> adminReport() {
+		String sql = "SELECT DD.NAME AS DEPARTMENT_NAME,ED.ID AS EMPLOYEE_ID,(SELECT DESIGNATION_DETAILS.`NAME` FROM DESIGNATION_DETAILS WHERE ID IN (SELECT DESIGNATION_ID FROM EMPLOYEE_DETAILS WHERE ID=ED.`ID`)) AS DESIGNATION_NAME,ED.RATING,(SELECT COUNT(CE.COMPLAINT_ID)FROM COMPLAINTS_EMPLOYEE CE WHERE EMPLOYEE_ID=ED.ID) AS COMPLAINTS_HANDLED FROM DEPARTMENT_DETAILS DD JOIN EMPLOYEE_DETAILS ED ON DD.ID=ED.DEPARTMENT_ID ";
+		return jdbcTemplate.query(sql,(rs, rowNum) -> {
+			final Report report= new Report();
+			report.setDepartmentName(rs.getString("DEPARTMENT_NAME"));
+			report.setEmployeeId(rs.getInt("EMPLOYEE_ID"));
+			report.setDesignationName(rs.getString("DESIGNATION_NAME"));
+			report.setRating(rs.getInt("RATING"));
+			report.setComplaintsHandled(rs.getInt("COMPLAINTS_HANDLED"));
+			return report;
+		});
+	}
+	
 }
