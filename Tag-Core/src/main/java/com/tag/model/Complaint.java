@@ -1,7 +1,5 @@
 package com.tag.model;
 
-import java.time.LocalDateTime;
-
 import lombok.Data;
 
 @Data
@@ -14,7 +12,7 @@ public class Complaint {
 	String streetName;
 	String pincode;
 	String details;
-	LocalDateTime registeredTime;
+	String registeredTime;
 	Status status;
-	LocalDateTime statusTime;
+	String statusTime;
 }

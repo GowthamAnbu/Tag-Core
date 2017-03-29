@@ -58,4 +58,12 @@ public class EmployeeDetailDAO {
 		});
 	}
 	
+	public List<Integer> getWorker(){
+		String sql ="SELECT ID FROM EMPLOYEE_DETAILS WHERE DESIGNATION_ID=1";
+		List<Integer> employeeList=jdbcTemplate.queryForList(sql, Integer.class);
+		return employeeList;
+		
+	}
+	
+	
 }

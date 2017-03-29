@@ -40,6 +40,7 @@ public class ComplaintDAO {
 	}
 	
 	public List<Complaint> findAll() {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		String sql = "SELECT ID,NAME,USER_ID,DEPARTMENT_ID,DOOR_NUMBER,STREET_NAME,PINCODE,DETAILS,REGISTERED_TIME,STATUS_ID,STATUS_TIME FROM COMPLAINTS";
 		return jdbcTemplate.query(sql, (rs, rowNum) -> {
 			final Complaint complaint = new Complaint();
@@ -55,10 +56,10 @@ public class ComplaintDAO {
 			complaint.setStreetName(rs.getString("STREET_NAME"));
 			complaint.setPincode(rs.getString("PINCODE"));
 			complaint.setDetails(rs.getString("DETAILS"));
-			complaint.setRegisteredTime(rs.getTimestamp("REGISTERED_TIME").toLocalDateTime());
+			complaint.setRegisteredTime(sdf.format(rs.getTimestamp("REGISTERED_TIME")));
 			final Status status = new Status();
 			status.setId(rs.getInt("STATUS_ID"));
-			complaint.setStatusTime(rs.getTimestamp("STATUS_TIME").toLocalDateTime());
+			complaint.setStatusTime(sdf.format(rs.getTimestamp("STATUS_TIME")));
 			complaint.setStatus(status);
 			return complaint;
 		});
@@ -124,14 +125,15 @@ public class ComplaintDAO {
 			final Status status = new Status();
 			status.setId(rs.getInt("STATUS_ID"));
 			complaint.setStatus(status);
-			complaint.setRegisteredTime(rs.getTimestamp("REGISTERED_TIME").toLocalDateTime());
-			complaint.setStatusTime(rs.getTimestamp("STATUS_TIME").toLocalDateTime());
+			complaint.setRegisteredTime(sdf.format(rs.getTimestamp("REGISTERED_TIME")));
+			complaint.setStatusTime(sdf.format(rs.getTimestamp("STATUS_TIME")));
 			complaint.setUser(user);
 			return complaint;
 		});
 	}
 	
 	public List<Complaint> viewComplaintStatus(Integer userId) {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		String sql = "SELECT ID,NAME,USER_ID,DEPARTMENT_ID,DOOR_NUMBER,STREET_NAME,PINCODE,DETAILS,REGISTERED_TIME,STATUS_ID,STATUS_TIME FROM COMPLAINTS WHERE USER_ID=?";
 		Object[] args={userId};
 		return jdbcTemplate.query(sql, args, (rs, rowNum) -> {
@@ -148,10 +150,10 @@ public class ComplaintDAO {
 			complaint.setStreetName(rs.getString("STREET_NAME"));
 			complaint.setPincode(rs.getString("PINCODE"));
 			complaint.setDetails(rs.getString("DETAILS"));
-			complaint.setRegisteredTime(rs.getTimestamp("REGISTERED_TIME").toLocalDateTime());
+			complaint.setRegisteredTime(sdf.format(rs.getTimestamp("REGISTERED_TIME")));
 			final Status status = new Status();
 			status.setId(rs.getInt("STATUS_ID"));
-			complaint.setStatusTime(rs.getTimestamp("STATUS_TIME").toLocalDateTime());
+			complaint.setStatusTime(sdf.format(rs.getTimestamp("STATUS_TIME")));
 			complaint.setStatus(status);
 			return complaint;
 		});
