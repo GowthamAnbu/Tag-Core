@@ -10,4 +10,5 @@ public class Report {
 	String designationName;
 	Integer Rating;
 	Integer complaintsHandled;
+	String emailId;
 }

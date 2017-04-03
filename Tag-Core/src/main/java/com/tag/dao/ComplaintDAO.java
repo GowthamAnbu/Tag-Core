@@ -41,7 +41,7 @@ public class ComplaintDAO {
 	
 	public List<Complaint> findAll() {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		String sql = "SELECT ID,NAME,USER_ID,DEPARTMENT_ID,DOOR_NUMBER,STREET_NAME,PINCODE,DETAILS,REGISTERED_TIME,STATUS_ID,STATUS_TIME FROM COMPLAINTS";
+		String sql = "SELECT ID,NAME,USER_ID,DEPARTMENT_ID,DOOR_NUMBER,STREET_NAME,PINCODE,DETAILS,REGISTERED_TIME,STATUS_ID,STATUS_TIME FROM COMPLAINTS ORDER BY STATUS_ID";
 		return jdbcTemplate.query(sql, (rs, rowNum) -> {
 			final Complaint complaint = new Complaint();
 			final User user = new User();
@@ -204,6 +204,27 @@ public class ComplaintDAO {
 		String sql = "SELECT STATUS_ID FROM COMPLAINTS WHERE ID=?";
 		Object[] args = {id};
 		return jdbcTemplate.queryForObject(sql,args,Integer.class);
+	}
+	
+	public Complaint findassignedByComplaintId(Integer complaintId) {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		String sql = "SELECT ID,NAME,USER_ID,DEPARTMENT_ID,DOOR_NUMBER,STREET_NAME,PINCODE,DETAILS,REGISTERED_TIME,STATUS_ID,STATUS_TIME FROM COMPLAINTS WHERE STATUS_ID=1 AND ID=?";
+		Object[] args={complaintId};
+		return jdbcTemplate.queryForObject(sql,args,(rs, rowNum) -> {
+			final Complaint complaint = new Complaint();
+			final User user = new User();
+			user.setId(rs.getInt("USER_ID"));
+			complaint.setId(rs.getInt("ID"));
+			complaint.setUser(user);
+			complaint.setName(rs.getString("NAME"));
+			complaint.setDoorNo(rs.getString("DOOR_NUMBER"));
+			complaint.setStreetName(rs.getString("STREET_NAME"));
+			complaint.setPincode(rs.getString("PINCODE"));
+			complaint.setDetails(rs.getString("DETAILS"));
+			complaint.setRegisteredTime(sdf.format(rs.getTimestamp("REGISTERED_TIME")));
+			complaint.setStatusTime(sdf.format(rs.getTimestamp("STATUS_TIME")));
+			return complaint;
+		});
 	}
 	
 }
