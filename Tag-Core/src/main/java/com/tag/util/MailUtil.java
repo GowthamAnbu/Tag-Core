@@ -105,8 +105,47 @@ public class MailUtil {
 			email.send();
 			} catch (EmailException e) {
 			e.printStackTrace();
+			}
 		}
 		
+			public static void sendToUpper(String subject,String emailId,String content){
+				try{
+				HtmlEmail email = new HtmlEmail();
+				email.setSmtpPort(465);
+				email.setAuthenticator(new DefaultAuthenticator("ticketmanagement.tms@gmail.com", "ticket123"));
+				email.setDebug(true);
+				email.setHostName("smtp.gmail.com");
+				email.setSSLOnConnect(true);
+				email.setFrom("ticketmanagement.tms@gmail.com");
+				email.setSubject(subject);
+				email.setHtmlMsg(content);
+				email.addTo(emailId);
+				email.setStartTLSEnabled(true);
+				email.send();
+				} catch (EmailException e) {
+				e.printStackTrace();
+			}
+			
 	}
+			
+			public static void sendSimpleMail(String subject,User user) {
+				try{
+				Email email = new SimpleEmail();
+				email.setSmtpPort(465);
+				email.setAuthenticator(new DefaultAuthenticator("ticketmanagement.tms@gmail.com", "ticket123"));
+				email.setDebug(true);
+				email.setHostName("smtp.gmail.com");
+				email.setSSLOnConnect(true);
+				email.setFrom("ticketmanagement.tms@gmail.com");
+				email.setSubject(subject);
+				email.setMsg("Dear "+ user.getName()+"," +" your complaint has been successfully cancelled");
+				email.addTo(user.getEmailId());
+				email.setStartTLSEnabled(true);
+				email.send();
+				}
+				catch (EmailException e) {
+					e.printStackTrace();
+				}
+		}
 	
 }
